@@ -200,10 +200,10 @@ desired set of tables are output as tab-separate-value (tsv) files.
 
 The sequence of steps to build the database are as follows:
 
-1. Open MySQL in terminal:
+1. Open MySQL in terminal (-v = verbose mode):
 
 ```bash
-$ mysql -u root -p --local-infile
+$ mysql -v -u root -p --local-infile
 ```
 
 The SQL commands to build the database described above by the ER diagram and
@@ -217,22 +217,22 @@ logical schema are contained in 4 `*.sql scripts`:
 2. Create IMDb data base in MySQL:
 
 ```sqlmysql  
-mysql> SOURCE /Users/lappy/Git_repos_mine/MySQL_IMDb_Project/imdb-create-tables.sql
+mysql> SOURCE imdb-create-tables.sql
 ```
 
 3. Load data using this script in MySQL:
 ```sqlmysql
-mysql> SOURCE /Users/lappy/Git_repos_mine/MySQL_IMDb_Project/imdb-load-data.sql
+mysql> SOURCE imdb-load-data.sql
 ```
 
 4. Add constraints to the IMDb database in MySQL
 ```sqlmysql
-mysql> SOURCE /Users/lappy/Git_repos_mine/MySQL_IMDb_Project/imdb-add-constraints.sql
+mysql> SOURCE imdb-add-constraints.sql
 ```
 
 5. Add indexes to the IMDb database in MySQL
 ```sqlmysql
-mysql> SOURCE /Users/lappy/Git_repos_mine/MySQL_IMDb_Project/imdb-index-tables.sql
+mysql> SOURCE imdb-index-tables.sql
 ```
 
 
