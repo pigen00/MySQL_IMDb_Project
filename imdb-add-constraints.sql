@@ -23,92 +23,121 @@ mysql> SOURCE /Users/lappy/Git_repos_mine/MySQL_IMDb_Project/imdb-index-tables.s
 */
 
 -- Add constraints individually
+select 'ALTER TABLE Names_ ADD CONSTRAINT Names_pri_key PRIMARY KEY (name_id);' AS '';
 ALTER TABLE Names_
 ADD CONSTRAINT Names_pri_key PRIMARY KEY (name_id);
 
+select 'ALTER TABLE Titles ADD CONSTRAINT Titles_pri_key PRIMARY KEY (title_id);' AS '';
 ALTER TABLE Titles
 ADD CONSTRAINT Titles_pri_key PRIMARY KEY (title_id);
 
+select 'ALTER TABLE Aliases ADD CONSTRAINT Aliases_pri_key PRIMARY KEY (title_id,ordering);' AS '';
 ALTER TABLE Aliases
 ADD CONSTRAINT Aliases_pri_key PRIMARY KEY (title_id,ordering);
 
+select 'ALTER TABLE Alias_attributes ADD CONSTRAINT Alias_attributes_pri_key PRIMARY KEY (title_id,ordering);' AS '';
 ALTER TABLE Alias_attributes
 ADD CONSTRAINT Alias_attributes_pri_key PRIMARY KEY (title_id,ordering);
 
+select 'ALTER TABLE Alias_types ADD CONSTRAINT Alias_types_pri_key PRIMARY KEY (title_id,ordering);' AS '';
 ALTER TABLE Alias_types
 ADD CONSTRAINT Alias_types_pri_key PRIMARY KEY (title_id,ordering);
 
+select 'ALTER TABLE Directors ADD CONSTRAINT Directors_pri_key PRIMARY KEY (title_id,name_id);' AS '';
 ALTER TABLE Directors
 ADD CONSTRAINT Directors_pri_key PRIMARY KEY (title_id,name_id);
 
+select 'ALTER TABLE Directors ADD CONSTRAINT Directors_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);' AS '';
 ALTER TABLE Directors
 ADD CONSTRAINT Directors_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);
 
+select 'ALTER TABLE Writers ADD CONSTRAINT Writers_pri_key PRIMARY KEY (title_id,name_id);' AS '';
 ALTER TABLE Writers
 ADD CONSTRAINT Writers_pri_key PRIMARY KEY (title_id,name_id);
 
+select 'ALTER TABLE Writers ADD CONSTRAINT Writers_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);' AS '';
 ALTER TABLE Writers
 ADD CONSTRAINT Writers_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);
 
+select 'ALTER TABLE Episode_belongs_to ADD CONSTRAINT Episode_belongs_to_pri_key PRIMARY KEY (episode_title_id);' AS '';
 ALTER TABLE Episode_belongs_to
 ADD CONSTRAINT Episode_belongs_to_pri_key PRIMARY KEY (episode_title_id);
 
-ALTER TABLE Episode_belongs_to
-ADD CONSTRAINT Episode_belongs_to_ep_title_id_fkey FOREIGN KEY (episode_title_id) REFERENCES Titles(title_id);
-
+select 'ALTER TABLE Name_worked_as ADD CONSTRAINT Name_worked_as_pri_key PRIMARY KEY (name_id,profession);' AS '';
 ALTER TABLE Name_worked_as
 ADD CONSTRAINT Name_worked_as_pri_key PRIMARY KEY (name_id,profession);
 
+select 'ALTER TABLE Name_worked_as ADD CONSTRAINT Name_worked_as_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);' AS '';
 ALTER TABLE Name_worked_as
 ADD CONSTRAINT Name_worked_as_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);
 
+select 'ALTER TABLE Known_for ADD CONSTRAINT Known_for_pri_key PRIMARY KEY (name_id,title_id);' AS '';
 ALTER TABLE Known_for
 ADD CONSTRAINT Known_for_pri_key PRIMARY KEY (name_id,title_id);
 
+select 'ALTER TABLE Known_for ADD CONSTRAINT Known_for_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);' AS '';
 ALTER TABLE Known_for
 ADD CONSTRAINT Known_for_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);
 
+select 'ALTER TABLE Principals ADD CONSTRAINT Principals_pri_key PRIMARY KEY (title_id,ordering);' AS '';
 ALTER TABLE Principals
 ADD CONSTRAINT Principals_pri_key PRIMARY KEY (title_id,ordering);
 
 -- role_ is TEXT, so we need to add indexing length (255)
+select 'ALTER TABLE Had_role ADD CONSTRAINT Had_role_pri_key PRIMARY KEY (title_id,name_id,role_(255));' AS '';
 ALTER TABLE Had_role
 ADD CONSTRAINT Had_role_pri_key PRIMARY KEY (title_id,name_id,role_(255));
 
+select 'ALTER TABLE Title_genres ADD CONSTRAINT Title_genres_pri_key PRIMARY KEY (title_id,genre);' AS '';
 ALTER TABLE Title_genres
 ADD CONSTRAINT Title_genres_pri_key PRIMARY KEY (title_id,genre);
 
+select 'ALTER TABLE Title_genres ADD CONSTRAINT Title_genres_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);' AS '';
 ALTER TABLE Title_genres
 ADD CONSTRAINT Title_genres_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);
 
+select 'ALTER TABLE Title_ratings ADD CONSTRAINT Title_ratings_pri_key PRIMARY KEY (title_id);' AS '';
 ALTER TABLE Title_ratings
 ADD CONSTRAINT Title_ratings_pri_key PRIMARY KEY (title_id);
 
+select 'ALTER TABLE Title_ratings ADD CONSTRAINT Title_ratings_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);' AS '';
 ALTER TABLE Title_ratings
 ADD CONSTRAINT Title_ratings_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);
 
 -- Issues with missing data in title.basics.tsv.gz, name.basics.tsv.gz, ...
 
 -- Disable foreign key check lock
+select 'SET foreign_key_checks = 0;' AS '';
 SET foreign_key_checks = 0;
+
+----  Cannot add or update a child row: a foreign key constraint fails
+---- (`IMDb`.`#sql-5707_1e`, CONSTRAINT `Episode_belongs_to_ep_title_id_fkey` FOREIGN KEY (`episode_title_id`) REFERENCES `Titles` (`title_id`))
+select 'ALTER TABLE Episode_belongs_to ADD CONSTRAINT Episode_belongs_to_ep_title_id_fkey FOREIGN KEY (episode_title_id) REFERENCES Titles(title_id);' AS '';
+ALTER TABLE Episode_belongs_to
+ADD CONSTRAINT Episode_belongs_to_ep_title_id_fkey FOREIGN KEY (episode_title_id) REFERENCES Titles(title_id);
+
 
 -- Aliases has titles that do not exist in Titles, i.e., there are entries in
 -- IMDb's title.akas.tsv.gz that are not present in title.basics.tsv.gz. The same
 -- issue arises when setting the foreign key for the Alias_attributes and
 -- Alias_types tables.
+select 'ALTER TABLE Aliases ADD CONSTRAINT Aliases_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);' AS '';
 ALTER TABLE Aliases
 ADD CONSTRAINT Aliases_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);
 -- SELECT * FROM Aliases AS A WHERE A.title_id NOT IN (SELECT title_id FROM Titles) LIMIT 10;
 -- SELECT * FROM Titles WHERE title_id = 'tt0021006';
 -- SELECT * FROM Aliases WHERE title_id = 'tt0021006';
 
+select 'ALTER TABLE Alias_attributes ADD CONSTRAINT Alias_attributes_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);' AS '';
 ALTER TABLE Alias_attributes
 ADD CONSTRAINT Alias_attributes_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);
 
+select 'ALTER TABLE Alias_types ADD CONSTRAINT Alias_types_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);' AS '';
 ALTER TABLE Alias_types
 ADD CONSTRAINT Alias_types_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);
 
 -- Ditto for Episode_belongs_to table.
+select 'ALTER TABLE Episode_belongs_to ADD CONSTRAINT Episode_belongs_to_show_title_id_fkey FOREIGN KEY (parent_tv_show_title_id) REFERENCES Titles(title_id);' AS '';
 ALTER TABLE Episode_belongs_to
 ADD CONSTRAINT Episode_belongs_to_show_title_id_fkey FOREIGN KEY (parent_tv_show_title_id) REFERENCES Titles(title_id);
 -- SELECT DISTINCT E.parent_tv_show_title_id
@@ -118,42 +147,49 @@ ADD CONSTRAINT Episode_belongs_to_show_title_id_fkey FOREIGN KEY (parent_tv_show
 -- SELECT * FROM Titles WHERE title_id = 'tt6403604';
 -- SELECT * FROM Episode_belongs_to WHERE parent_tv_show_title_id = 'tt6403604';
 
+select 'ALTER TABLE Known_for ADD CONSTRAINT Known_for_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);' AS '';
 ALTER TABLE Known_for
 ADD CONSTRAINT Known_for_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);
 -- SELECT * FROM Known_for AS K WHERE K.title_id NOT IN (SELECT title_id FROM Titles) LIMIT 10;
 -- SELECT * FROM Titles WHERE title_id = 'tt0331007';
 -- SELECT * FROM Known_for WHERE title_id = 'tt0331007' LIMIT 5;
 
+select 'ALTER TABLE Principals ADD CONSTRAINT Principals_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);' AS '';
 ALTER TABLE Principals
 ADD CONSTRAINT Principals_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);
 -- SELECT * FROM Principals AS P WHERE P.name_id NOT IN (SELECT name_id FROM Names_) LIMIT 10;
 -- SELECT * FROM Names_ WHERE name_id = 'nm0730493';
 -- SELECT * FROM Principals WHERE name_id = 'nm0730493';
 
+select 'ALTER TABLE Principals ADD CONSTRAINT Principals_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);' AS '';
 ALTER TABLE Principals
 ADD CONSTRAINT Principals_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);
 -- SELECT * FROM Principals AS P WHERE P.title_id NOT IN (SELECT title_id FROM Titles) LIMIT 10;
 -- SELECT * FROM Titles WHERE title_id = 'tt0047941';
 -- SELECT * FROM Principals WHERE title_id = 'tt0047941';
 
+select 'ALTER TABLE Had_role ADD CONSTRAINT Had_role_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);' AS '';
 ALTER TABLE Had_role
 ADD CONSTRAINT Had_role_title_id_fkey FOREIGN KEY (title_id) REFERENCES Titles(title_id);
 -- SELECT * FROM Had_role AS H WHERE H.title_id NOT IN (SELECT title_id FROM Titles) LIMIT 10;
 -- SELECT * FROM Titles WHERE title_id = 'tt0047941';
 -- SELECT * FROM Had_role WHERE title_id = 'tt0047941';
 
+select 'ALTER TABLE Had_role ADD CONSTRAINT Had_role_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);' AS '';
 ALTER TABLE Had_role
 ADD CONSTRAINT Had_role_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);
 -- SELECT * FROM Had_role AS H WHERE H.name_id NOT IN (SELECT name_id FROM Names_) LIMIT 10;
 -- SELECT * FROM Names_ WHERE name_id = 'nm0241605';
 -- SELECT * FROM Had_role WHERE name_id = 'nm0241605';
 
+select 'ALTER TABLE Directors ADD CONSTRAINT Directors_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);' AS '';
 ALTER TABLE Directors
 ADD CONSTRAINT Directors_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);
 -- SELECT * FROM Directors AS D WHERE D.name_id NOT IN (SELECT name_id FROM Names_) LIMIT 10;
 -- SELECT * FROM Names_ WHERE name_id = 'nm10576972';
 -- SELECT * FROM Directors WHERE name_id = 'nm10576972';
 
+select 'ALTER TABLE Writers ADD CONSTRAINT Writers_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);' AS '';
 ALTER TABLE Writers
 ADD CONSTRAINT Writers_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name_id);
 -- SELECT * FROM Writers AS W WHERE W.name_id NOT IN (SELECT name_id FROM Names_) LIMIT 10;
@@ -161,4 +197,5 @@ ADD CONSTRAINT Writers_name_id_fkey FOREIGN KEY (name_id) REFERENCES Names_(name
 -- SELECT * FROM Writers WHERE name_id = 'nm10032129';
 
 -- Enable foreign key check lock
+select 'SET foreign_key_checks = 1;' AS '';
 SET foreign_key_checks = 1;
