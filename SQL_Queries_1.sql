@@ -43,10 +43,10 @@ SELECT * FROM Q4 LIMIT 10;
 --
 -- Query 5
 -- How many actors are there in the database?
-CREATE OR REPLACE VIEW Q5(Number_of_actors)
-AS SELECT COUNT(DISTINCT N.name_id) AS Number_of_actors
-FROM Name_worked_as AS N
-WHERE N.profession IN ('actor','actress');
+--CREATE OR REPLACE VIEW Q5(Number_of_actors)
+--AS SELECT COUNT(DISTINCT N.name_id) AS Number_of_actors
+--FROM Name_worked_as AS N
+--WHERE N.profession IN ('actor','actress');
 --
 SELECT * FROM Q5;
 --
