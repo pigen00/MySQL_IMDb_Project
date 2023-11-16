@@ -1,4 +1,4 @@
---
+---
 -- Query 1
 -- How many different title_types are there? How many of each?
 CREATE OR REPLACE VIEW Q1(title_type,Count)
