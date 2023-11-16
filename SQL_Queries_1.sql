@@ -1,4 +1,4 @@
----
+--
 -- Query 1
 -- How many different title_types are there? How many of each?
 CREATE OR REPLACE VIEW Q1(title_type,Count)
@@ -41,14 +41,14 @@ ORDER BY runtime_minutes DESC, title_type ASC;
 --
 SELECT * FROM Q4 LIMIT 10;
 --
--- Query 5
+-- Query 5 -- 13GB /tmp not enough for this...
 -- How many actors are there in the database?
 --CREATE OR REPLACE VIEW Q5(Number_of_actors)
 --AS SELECT COUNT(DISTINCT N.name_id) AS Number_of_actors
 --FROM Name_worked_as AS N
 --WHERE N.profession IN ('actor','actress');
 --
-SELECT * FROM Q5;
+--SELECT * FROM Q5;
 --
 -- Query 6
 -- How many movies are there in the database?
