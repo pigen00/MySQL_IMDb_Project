@@ -64,19 +64,6 @@ AND T.title_id = H.title_id
 AND N.name_id = H.name_id
 GROUP BY N.name_id;
 --
--- Query 11
--- I don't recognise some of these names lets look at them more closely
-CREATE OR REPLACE VIEW Q11(name_,title_id,primary_title,start_year)
-AS SELECT Q9.name_, T.title_id, T.primary_title, T.start_year
-FROM Q9, Titles AS T, Had_role AS H
-WHERE Q9.name_id = H.name_id
-AND H.role_ LIKE 'James Bond'
-AND T.title_id = H.title_id
-AND T.title_type LIKE 'movie'
-ORDER BY T.start_year DESC;
---
-SELECT * FROM Q11;
---
 -- Query 12
 -- Find all the movies made by Don "The Dragon" Wilson, the former light heavy
 -- weight kickboxing champion. He was born in 1954 and is famous for the
@@ -162,3 +149,4 @@ AND T2.title_type = 'tvEpisode'
 AND T2.title_id = E.episode_title_id
 AND T2.title_id = R.title_id
 ORDER BY E.season_number, E.episode_number;
+--
