@@ -33,9 +33,9 @@ LIMIT 10;
 --
 -- Query 6
 -- How many movies are there in the database?
-SELECT COUNT(DISTINCT T.title_id) AS Number_of_movies
-FROM Titles AS T
-WHERE T.title_type IN ('movie','video');
+-- SELECT COUNT(DISTINCT T.title_id) AS Number_of_movies
+-- FROM Titles AS T
+-- WHERE T.title_type IN ('movie','video');
 --
 -- Query 7
 -- What time period does the database cover?
