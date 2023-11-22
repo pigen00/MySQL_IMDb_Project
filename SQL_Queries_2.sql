@@ -256,7 +256,7 @@ FROM (SELECT E.season_number, E.episode_number, T2.primary_title, R.average_rati
 	AND T2.title_id = R.title_id
 	ORDER BY E.season_number, E.episode_number) as Q22
 WHERE Q22.average_rating = (SELECT MAX(Q22.average_rating) FROM Q22);
--- 
+--
 -- Query Q24
 -- How many episodes were there in The X-Files per season? And what was the average of the average episode ratings ?
 SELECT Q22.season_number, COUNT(*) AS Number_of_episodes, AVG(Q22.average_rating) AS Average_of_ep_average_ratings
