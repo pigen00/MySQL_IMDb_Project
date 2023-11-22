@@ -64,6 +64,35 @@ AND T.title_id = H.title_id
 AND N.name_id = H.name_id
 GROUP BY N.name_id;
 --
+-- Query 10
+-- How many actors played James Bond?
+SELECT COUNT(DISTINCT Q9.name_id) AS number_of_JB_actors
+FROM
+( SELECT N.name_id, N.name_, COUNT(*) AS number_of_films
+  FROM Names_ AS N, Had_role AS H, Titles AS T
+  WHERE H.role_ LIKE 'James Bond'
+  AND T.title_type LIKE 'movie'
+  AND T.title_id = H.title_id
+  AND N.name_id = H.name_id
+  GROUP BY N.name_id) as Q9;
+--
+-- Query 11
+-- I don't recognise some of these names lets look at them more closely
+SELECT Q9.name_, T.title_id, T.primary_title, T.start_year
+FROM ( SELECT N.name_id, N.name_, COUNT(*) AS number_of_films
+  FROM Names_ AS N, Had_role AS H, Titles AS T
+  WHERE H.role_ LIKE 'James Bond'
+  AND T.title_type LIKE 'movie'
+  AND T.title_id = H.title_id
+  AND N.name_id = H.name_id
+  GROUP BY N.name_id) as Q9,
+Titles AS T, Had_role AS H
+WHERE Q9.name_id = H.name_id
+AND H.role_ LIKE 'James Bond'
+AND T.title_id = H.title_id
+AND T.title_type LIKE 'movie'
+ORDER BY T.start_year DESC;
+--
 -- Query 12
 -- Find all the movies made by Don "The Dragon" Wilson, the former light heavy
 -- weight kickboxing champion. He was born in 1954 and is famous for the
@@ -80,6 +109,50 @@ AND H.name_id = (
   WHERE N.name_ LIKE 'Don Wilson' AND N.birth_year = 1954)
 ORDER BY T.start_year ASC;
 --
+-- Query 13
+-- Did he ever play a role multiple times ?
+SELECT Q12.role_, COUNT(*) AS Count
+FROM (SELECT DISTINCT T.start_year, T.title_type, T.primary_title, H.role_
+  FROM Titles AS T, Had_role AS H
+  WHERE T.title_id = H.title_id
+  AND H.role_ <> 'Himself'
+  AND T.title_type IN ('movie','video')
+  AND H.name_id = (
+    SELECT N.name_id
+    FROM Names_ AS N
+    WHERE N.name_ LIKE 'Don Wilson' AND N.birth_year = 1954)
+  ORDER BY T.start_year ASC) as Q12
+GROUP BY Q12.role_
+HAVING Count >=2;
+--
+-- Query 14
+-- What movies were these ?
+SELECT Q12.primary_title, Q12.role_
+FROM (SELECT DISTINCT T.start_year, T.title_type, T.primary_title, H.role_
+  FROM Titles AS T, Had_role AS H
+  WHERE T.title_id = H.title_id
+  AND H.role_ <> 'Himself'
+  AND T.title_type IN ('movie','video')
+  AND H.name_id = (
+    SELECT N.name_id
+    FROM Names_ AS N
+    WHERE N.name_ LIKE 'Don Wilson' AND N.birth_year = 1954)
+  ORDER BY T.start_year ASC) as Q12,
+ (SELECT Q12.role_, COUNT(*) AS Count
+FROM (SELECT DISTINCT T.start_year, T.title_type, T.primary_title, H.role_
+  FROM Titles AS T, Had_role AS H
+  WHERE T.title_id = H.title_id
+  AND H.role_ <> 'Himself'
+  AND T.title_type IN ('movie','video')
+  AND H.name_id = (
+    SELECT N.name_id
+    FROM Names_ AS N
+    WHERE N.name_ LIKE 'Don Wilson' AND N.birth_year = 1954)
+  ORDER BY T.start_year ASC) as Q12
+GROUP BY Q12.role_
+HAVING Count >=2) as Q13
+WHERE Q12.role_ = Q13.role_;
+-- 
 -- Query 15
 -- What are the top 250 movies as determined by the average rating with the over
 -- 100,000 votes?
@@ -90,6 +163,26 @@ AND T.title_type = 'movie'
 AND R.num_votes > 100000
 ORDER BY R.average_rating DESC
 LIMIT 250;
+--
+-- Query 16
+-- Who are the top 10 actors who have made the most movies listed in the top
+-- 250 movies (determined as in Q15) and how many?
+SELECT H.name_id, N.name_, COUNT(*) AS Count
+FROM (SELECT T.title_id, T.primary_title, R.average_rating
+  FROM Titles AS T, Title_ratings AS R
+  WHERE T.title_id = R.title_id
+  AND T.title_type = 'movie'
+  AND R.num_votes > 100000
+  ORDER BY R.average_rating DESC
+  LIMIT 250)as Q15,
+  Titles AS T,
+Names_ AS N, Had_role AS H
+WHERE Q15.title_id = T.title_id
+AND T.title_id = H.title_id
+AND N.name_id = H.name_id
+GROUP BY H.name_id
+ORDER BY Count DESC
+LIMIT 10;
 -- Query 17
 -- List all actor names and their roles who starred in the movie Back to the
 -- future
@@ -150,3 +243,31 @@ AND T2.title_id = E.episode_title_id
 AND T2.title_id = R.title_id
 ORDER BY E.season_number, E.episode_number;
 --
+-- Query 23
+-- What was the most popular episode of The X-Files?
+SELECT Q22.season_number, Q22.episode_number, Q22.primary_title, Q22.average_rating
+FROM (SELECT E.season_number, E.episode_number, T2.primary_title, R.average_rating
+	FROM Titles AS T1, Titles AS T2, Episode_belongs_to AS E, Title_ratings AS R
+	WHERE T1.primary_title = 'The X-Files'
+	AND T1.title_type = 'tvSeries'
+	AND T1.title_id = E.parent_tv_show_title_id
+	AND T2.title_type = 'tvEpisode'
+	AND T2.title_id = E.episode_title_id
+	AND T2.title_id = R.title_id
+	ORDER BY E.season_number, E.episode_number)as Q22
+WHERE Q22.average_rating = (SELECT MAX(Q22.average_rating) FROM Q22);
+-- 
+-- Query Q24
+-- How many episodes were there in The X-Files per season? And what was the average of the average episode ratings ?
+SELECT Q22.season_number, COUNT(*) AS Number_of_episodes, AVG(Q22.average_rating) AS Average_of_ep_average_ratings
+FROM (SELECT E.season_number, E.episode_number, T2.primary_title, R.average_rating
+	FROM Titles AS T1, Titles AS T2, Episode_belongs_to AS E, Title_ratings AS R
+	WHERE T1.primary_title = 'The X-Files'
+	AND T1.title_type = 'tvSeries'
+	AND T1.title_id = E.parent_tv_show_title_id
+	AND T2.title_type = 'tvEpisode'
+	AND T2.title_id = E.episode_title_id
+	AND T2.title_id = R.title_id
+	ORDER BY E.season_number, E.episode_number)as Q22
+GROUP BY Q22.season_number
+ORDER BY Q22.season_number;
