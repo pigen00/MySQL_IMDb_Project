@@ -254,7 +254,7 @@ FROM (SELECT E.season_number, E.episode_number, T2.primary_title, R.average_rati
 	AND T2.title_type = 'tvEpisode'
 	AND T2.title_id = E.episode_title_id
 	AND T2.title_id = R.title_id
-	ORDER BY E.season_number, E.episode_number)as Q22
+	ORDER BY E.season_number, E.episode_number) as Q22
 WHERE Q22.average_rating = (SELECT MAX(Q22.average_rating) FROM Q22);
 -- 
 -- Query Q24
@@ -268,6 +268,6 @@ FROM (SELECT E.season_number, E.episode_number, T2.primary_title, R.average_rati
 	AND T2.title_type = 'tvEpisode'
 	AND T2.title_id = E.episode_title_id
 	AND T2.title_id = R.title_id
-	ORDER BY E.season_number, E.episode_number)as Q22
+	ORDER BY E.season_number, E.episode_number) as Q22
 GROUP BY Q22.season_number
 ORDER BY Q22.season_number;
