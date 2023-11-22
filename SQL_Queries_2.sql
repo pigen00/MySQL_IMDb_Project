@@ -255,7 +255,15 @@ FROM (SELECT E.season_number, E.episode_number, T2.primary_title, R.average_rati
 	AND T2.title_id = E.episode_title_id
 	AND T2.title_id = R.title_id
 	ORDER BY E.season_number, E.episode_number) as Q22
-WHERE Q22.average_rating = (SELECT MAX(Q22.average_rating) FROM Q22);
+WHERE Q22.average_rating = (SELECT MAX(Q22.average_rating) FROM (SELECT E.season_number, E.episode_number, T2.primary_title, R.average_rating
+        FROM Titles AS T1, Titles AS T2, Episode_belongs_to AS E, Title_ratings AS R
+        WHERE T1.primary_title = 'The X-Files'
+        AND T1.title_type = 'tvSeries'
+        AND T1.title_id = E.parent_tv_show_title_id
+        AND T2.title_type = 'tvEpisode'
+        AND T2.title_id = E.episode_title_id
+        AND T2.title_id = R.title_id
+        ORDER BY E.season_number, E.episode_number) as Q22);
 --
 -- Query Q24
 -- How many episodes were there in The X-Files per season? And what was the average of the average episode ratings ?
